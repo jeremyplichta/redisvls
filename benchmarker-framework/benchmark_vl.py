@@ -11,9 +11,8 @@ class BenchmarkVL(BaseQueryExecutor):
         self.index = SearchIndex.from_existing(self.config.index_name or "redisvl", redis_client=redis_client)
 
     def execute_query(self, redis_client: redis.Redis) -> dict:
-        vector_data = np.random.randn(self.config.vector_dim or 960).astype(np.float32).tobytes()
         num_results = self.config.num_results or 3
-
+        vector_data = self.get_vector_from_pool()
         result = None
         with time_operation() as latency_ms:
             query = VectorQuery(
